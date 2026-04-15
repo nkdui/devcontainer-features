@@ -1,0 +1,34 @@
+{
+    "default": {
+        "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+        "features": {
+            "conan": {}
+        }
+    },
+    "debian": {
+        "image": "debian:latest",
+        "features": {
+            "conan": {}
+        }
+    },
+    "fedora": {
+        "image": "fedora:latest",
+        "features": {
+            "conan": {}
+        }
+    },
+    "archlinux": {
+        "image": "archlinux:latest",
+        "features": {
+            "conan": {}
+        }
+    },
+    "specific_version": {
+        "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+        "features": {
+            "conan": {
+                "conanVersion": "1.66"
+            }
+        }
+    }
+}

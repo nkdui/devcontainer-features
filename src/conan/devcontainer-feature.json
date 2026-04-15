@@ -1,0 +1,23 @@
+{
+    "name": "Conan Package Manager",
+    "id": "conan",
+    "version": "1.0.0",
+    "description": "Installs Conan, the open source C/C++ package manager",
+    "documentationURL": "https://docs.conan.io/",
+    "options": {
+        "conanVersion": {
+            "type": "string",
+            "default": "latest",
+            "description": "Version of Conan to install (e.g., '2.0.14', '1.60.2', or 'latest')"
+        },
+        "userHome": {
+            "type": "string",
+            "default": "/home/$_REMOTE_USER",
+            "description": "Home directory for the user (used for Conan cache and settings)"
+        }
+    },
+    "installsAfter": [
+        "ghcr.io/devcontainers/features/common-utils",
+        "ghcr.io/devcontainers/features/python"
+    ]
+}
