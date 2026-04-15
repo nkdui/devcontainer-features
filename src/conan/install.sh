@@ -7,6 +7,32 @@ echo "Activating feature 'conan'"
 CONAN_VERSION="${CONANVERSION:-latest}"
 USER_HOME="${USERHOME:-/root}"
 
+# Check if Conan is already installed
+if command -v conan > /dev/null 2>&1; then
+    INSTALLED_RAW=$(conan --version 2>&1 | head -n1)
+    # Extract version number from "Conan version X.Y.Z"
+    INSTALLED_VERSION=$(echo "$INSTALLED_RAW" | sed -n 's/.*version \([0-9]\+\.[0-9]\+\.[0-9]\+\).*/\1/p')
+
+    if [ -z "$INSTALLED_VERSION" ]; then
+        echo "WARNING: Could not parse installed Conan version from: $INSTALLED_RAW"
+        echo "Continuing with installation..."
+    elif [ "$CONAN_VERSION" = "latest" ]; then
+        echo "Conan is already installed: $INSTALLED_RAW"
+        echo "Skipping installation."
+        exit 0
+    elif [ "$INSTALLED_VERSION" = "$CONAN_VERSION" ]; then
+        echo "Conan version $CONAN_VERSION is already installed."
+        echo "Skipping installation."
+        exit 0
+    else
+        echo "ERROR: Version conflict detected!"
+        echo "  Requested version: $CONAN_VERSION"
+        echo "  Installed version: $INSTALLED_VERSION"
+        echo "Please remove the existing Conan installation or use 'latest' to accept any version."
+        exit 1
+    fi
+fi
+
 echo "Installing Conan version: ${CONAN_VERSION}"
 echo "User home directory: $USER_HOME"
 
@@ -21,9 +47,9 @@ else
 fi
 
 # Function to check if Python is installed
-distro_check() {
+python_check() {
     echo "Checking Python installation..."
-    if command -v python3 >/dev/null 2>&1; then
+    if command -v python3 > /dev/null 2>&1; then
         echo "Python3 is already installed"
         return 0
     fi
@@ -45,7 +71,7 @@ install_python_fedora() {
 }
 
 # Install Python based on distro
-if ! distro_check; then
+if ! python_check; then
     case "$DISTRO" in
         debian|ubuntu)
             install_python_debian
@@ -62,12 +88,6 @@ if ! distro_check; then
             exit 1
             ;;
     esac
-fi
-
-# Verify Python is available
-if ! command -v python3 >/dev/null 2>&1; then
-    echo "ERROR: python3 command not found after installation"
-    exit 1
 fi
 
 # Create a global virtual environment for Conan
