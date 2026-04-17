@@ -1,14 +1,14 @@
 {
-    "name": "Conan Package Manager",
+    "name": "Conan Package Manager (1.x)",
     "id": "conan",
-    "version": "1.0.0",
-    "description": "Installs Conan, the open source C/C++ package manager",
-    "documentationURL": "https://docs.conan.io/",
+    "version": "1.1.0",
+    "description": "Installs Conan 1.x, the open source C/C++ package manager",
+    "documentationURL": "https://docs.conan.io/en/1.x/",
     "options": {
         "conanVersion": {
             "type": "string",
             "default": "latest",
-            "description": "Version of Conan to install (e.g., '2.0.14', '1.60.2', or 'latest')"
+            "description": "Version of Conan 1.x to install (e.g., '1.66.0', '1.60.2', or 'latest' for newest 1.x)"
         },
         "userHome": {
             "type": "string",

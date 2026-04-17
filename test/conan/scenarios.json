@@ -1,34 +1,36 @@
 {
-    "ubuntu": {
-        "image": "ubuntu:latest",
-        "features": {
-            "conan": {}
-        }
-    },
-    "debian": {
-        "image": "debian:latest",
-        "features": {
-            "conan": {}
-        }
-    },
-    "fedora": {
-        "image": "fedora:latest",
-        "features": {
-            "conan": {}
-        }
-    },
-    "archlinux": {
-        "image": "archlinux:latest",
-        "features": {
-            "conan": {}
-        }
-    },
-    "specific_version": {
-        "image": "ubuntu:latest",
-        "features": {
-            "conan": {
-                "conanVersion": "1.66"
-            }
-        }
+  "debian": {
+    "image": "debian:latest",
+    "features": {
+      "conan": {}
     }
+  },
+  "fedora": {
+    "image": "fedora:latest",
+    "features": {
+      "conan": {}
+    }
+  },
+  "archlinux": {
+    "image": "archlinux:latest",
+    "features": {
+      "conan": {}
+    }
+  },
+  "specific_version": {
+    "image": "debian:latest",
+    "features": {
+      "conan": {
+        "conanVersion": "1.62.0"
+      }
+    }
+  },
+  "installed": {
+    "image": "conanio/conan:1.62.0",
+    "features": {
+      "conan": {
+        "conanVersion": "1.62.0"
+      }
+    }
+  }
 }

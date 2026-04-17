@@ -1,129 +1,134 @@
 #!/bin/sh
 set -e
 
-echo "Activating feature 'conan'"
+echo "Activating feature 'conan' (1.x series only)"
 
-# Get options from environment variables (capitalized as per spec)
 CONAN_VERSION="${CONANVERSION:-latest}"
 USER_HOME="${USERHOME:-/root}"
+CONAN_VENV_DIR="/opt/conan-venv"
 
-# Check if Conan is already installed
-if command -v conan > /dev/null 2>&1; then
-    INSTALLED_RAW=$(conan --version 2>&1 | head -n1)
-    # Extract version number from "Conan version X.Y.Z"
-    INSTALLED_VERSION=$(echo "$INSTALLED_RAW" | sed -n 's/.*version \([0-9]\+\.[0-9]\+\.[0-9]\+\).*/\1/p')
-
-    if [ -z "$INSTALLED_VERSION" ]; then
-        echo "WARNING: Could not parse installed Conan version from: $INSTALLED_RAW"
-        echo "Continuing with installation..."
-    elif [ "$CONAN_VERSION" = "latest" ]; then
-        echo "Conan is already installed: $INSTALLED_RAW"
-        echo "Skipping installation."
-        exit 0
-    elif [ "$INSTALLED_VERSION" = "$CONAN_VERSION" ]; then
-        echo "Conan version $CONAN_VERSION is already installed."
-        echo "Skipping installation."
-        exit 0
-    else
-        echo "ERROR: Version conflict detected!"
-        echo "  Requested version: $CONAN_VERSION"
-        echo "  Installed version: $INSTALLED_VERSION"
-        echo "Please remove the existing Conan installation or use 'latest' to accept any version."
+validate_version() {
+    if [ "$CONAN_VERSION" = "latest" ]; then
+        return
+    fi
+    MAJOR=$(echo "$CONAN_VERSION" | cut -d. -f1)
+    if [ "$MAJOR" != "1" ]; then
+        echo "ERROR: This feature only supports Conan 1.x. Requested version: $CONAN_VERSION"
         exit 1
     fi
-fi
+}
 
-echo "Installing Conan version: ${CONAN_VERSION}"
-echo "User home directory: $USER_HOME"
+get_installed_version() {
+    if ! command -v conan > /dev/null 2>&1; then
+        echo ""
+        return
+    fi
+    RAW=$(conan --version 2>&1 | head -n1)
+    echo "$RAW" | sed -n 's/.*version \([0-9]\+\.[0-9]\+\.[0-9]\+\).*/\1/p'
+}
 
-# Detect the Linux distribution
-if [ -f /etc/os-release ]; then
-    . /etc/os-release
-    DISTRO="$ID"
-    echo "Detected distribution: $DISTRO"
-else
-    echo "ERROR: Cannot detect distribution. /etc/os-release not found."
+check_existing_conan() {
+    INSTALLED=$(get_installed_version)
+    
+    if [ -z "$INSTALLED" ]; then
+        echo "No existing Conan installation found."
+        return
+    fi
+    
+    MAJOR=$(echo "$INSTALLED" | cut -d. -f1)
+    if [ "$MAJOR" != "1" ]; then
+        echo "ERROR: Conan $INSTALLED is installed, but this feature requires Conan 1.x"
+        exit 1
+    fi
+    
+    if [ "$CONAN_VERSION" = "latest" ]; then
+        echo "Conan 1.x already installed ($(conan --version 2>&1 | head -n1))"
+        echo "Skipping installation."
+        exit 0
+    fi
+    
+    if [ "$INSTALLED" = "$CONAN_VERSION" ]; then
+        echo "Conan $CONAN_VERSION is already installed. Skipping."
+        exit 0
+    fi
+    
+    echo "ERROR: Version conflict. Requested: $CONAN_VERSION, Installed: $INSTALLED"
     exit 1
-fi
+}
 
-# Function to check if Python is installed
-python_check() {
-    echo "Checking Python installation..."
+detect_distribution() {
+    if [ ! -f /etc/os-release ]; then
+        echo "ERROR: Cannot detect distribution. /etc/os-release not found."
+        exit 1
+    fi
+    . /etc/os-release
+    echo "$ID"
+}
+
+install_python() {
+    DISTRO=$(detect_distribution)
+    echo "Detected distribution: $DISTRO"
+    
     if command -v python3 > /dev/null 2>&1; then
         echo "Python3 is already installed"
-        return 0
+        return
     fi
-    echo "Python3 not found. Installing..."
-    return 1
-}
-
-install_python_debian() {
-    apt-get update
-    apt-get install -y --no-install-recommends python3 python3-venv
-}
-
-install_python_arch() {
-    pacman -Sy --noconfirm python
-}
-
-install_python_fedora() {
-    dnf install -y python3
-}
-
-# Install Python based on distro
-if ! python_check; then
+    
+    echo "Installing Python3..."
     case "$DISTRO" in
         debian|ubuntu)
-            install_python_debian
+            apt-get update && apt-get install -y --no-install-recommends python3 python3-venv
             ;;
         arch|archlinux)
-            install_python_arch
+            pacman -Sy --noconfirm python
             ;;
         fedora)
-            install_python_fedora
+            dnf install -y python3
             ;;
         *)
             echo "ERROR: Unsupported distribution: $DISTRO"
-            echo "Supported distributions: debian, ubuntu, arch, fedora"
             exit 1
             ;;
     esac
-fi
+}
 
-# Create a global virtual environment for Conan
-CONAN_VENV_DIR="/opt/conan-venv"
-echo "Creating global virtual environment at $CONAN_VENV_DIR..."
-python3 -m venv "$CONAN_VENV_DIR"
+install_conan() {
+    echo "Creating virtual environment at $CONAN_VENV_DIR..."
+    python3 -m venv "$CONAN_VENV_DIR"
+    
+    if [ "$CONAN_VERSION" = "latest" ]; then
+        echo "Installing latest Conan 1.x..."
+        "$CONAN_VENV_DIR/bin/pip" install --upgrade "conan<2"
+    else
+        echo "Installing Conan $CONAN_VERSION..."
+        "$CONAN_VENV_DIR/bin/pip" install "conan==$CONAN_VERSION"
+    fi
+    
+    ln -sf "$CONAN_VENV_DIR/bin/conan" /usr/local/bin/conan
+    chmod -R a+rX "$CONAN_VENV_DIR"
+    
+    if ! command -v conan > /dev/null 2>&1; then
+        echo "ERROR: Conan installation failed"
+        exit 1
+    fi
+    
+    echo "Successfully installed: $(conan --version 2>&1 | head -n1)"
+}
 
-# Install Conan in the virtual environment
-if [ "$CONAN_VERSION" = "latest" ]; then
-    echo "Installing latest Conan..."
-    "$CONAN_VENV_DIR/bin/pip" install --upgrade conan
-else
-    echo "Installing Conan version $CONAN_VERSION..."
-    "$CONAN_VENV_DIR/bin/pip" install conan=="$CONAN_VERSION"
-fi
+setup_conan_home() {
+    if [ -d "$USER_HOME/.conan" ]; then
+        return
+    fi
+    echo "Setting up Conan home directory at $USER_HOME/.conan..."
+    mkdir -p "$USER_HOME/.conan"
+    chown -R "$_REMOTE_USER:$_REMOTE_USER" "$USER_HOME/.conan" 2>/dev/null || true
+}
 
-# Create symlinks to make conan available globally
-ln -sf "$CONAN_VENV_DIR/bin/conan" /usr/local/bin/conan
-
-# Verify installation
-if command -v conan >/dev/null 2>&1; then
-    INSTALLED_VERSION=$(conan --version 2>&1 | head -n1)
-    echo "Successfully installed: $INSTALLED_VERSION"
-else
-    echo "ERROR: Conan installation failed. 'conan' command not found."
-    exit 1
-fi
-
-# Make the virtual environment accessible to all users
-chmod -R a+rX "$CONAN_VENV_DIR"
-
-# Create Conan home directory if it doesn't exist
-if [ ! -d "$USER_HOME/.conan2" ] && [ ! -d "$USER_HOME/.conan" ]; then
-    echo "Setting up Conan home directory..."
-    mkdir -p "$USER_HOME/.conan2"
-    chown -R "$_REMOTE_USER:$_REMOTE_USER" "$USER_HOME/.conan2" 2>/dev/null || true
-fi
+validate_version
+check_existing_conan
+echo "Installing Conan ${CONAN_VERSION} (user home: $USER_HOME)"
+install_python
+install_conan
+setup_conan_home
 
 echo "Conan feature activation complete!"
