@@ -7,7 +7,7 @@ set -e
 
 source dev-container-features-test-lib
 
-check "conan installed on fedora" command -v conan
+check "'conan' is installed" command -v conan
 check "conan version works" bash -c "conan --version"
 
 reportResults

@@ -85,6 +85,9 @@ install_python() {
         fedora)
             dnf install -y python3
             ;;
+        alpine)
+            apk add --no-cache python3 py3-pip
+            ;;
         *)
             echo "ERROR: Unsupported distribution: $DISTRO"
             exit 1

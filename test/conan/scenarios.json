@@ -17,6 +17,13 @@
       "conan": {}
     }
   },
+  "alpine": {
+    "image": "alpine:latest",
+    "features": {
+      "ghcr.io/cirolosapio/devcontainers-features/alpine-bash:0": {},
+      "conan": {}
+    }
+  },
   "specific_version": {
     "image": "debian:latest",
     "features": {
@@ -28,6 +35,7 @@
   "installed": {
     "image": "conanio/conan:1.62.0",
     "features": {
+      "ghcr.io/cirolosapio/devcontainers-features/alpine-bash:0": {},
       "conan": {
         "conanVersion": "1.62.0"
       }

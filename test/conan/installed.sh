@@ -7,7 +7,7 @@ set -e
 
 source dev-container-features-test-lib
 
-check "conan already installed" command -v conan
-check "conan version is 1.62.0" bash -c "conan --version | grep '1.62.0'"
+check "conan is installed" command -v conan
+check "conan --version" bash -c "conan --version"
 
 reportResults

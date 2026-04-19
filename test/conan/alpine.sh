@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Test scenario: debian
-# Tests Conan installation on Debian latest
+# Test scenario: alpine
+# Tests Conan installation on Alpine latest
 
 set -e
 

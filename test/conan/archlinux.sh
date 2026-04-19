@@ -7,7 +7,7 @@ set -e
 
 source dev-container-features-test-lib
 
-check "conan installed on archlinux" command -v conan
-check "conan version works" bash -c "conan --version"
+check "conan is installed" command -v conan
+check "conan --version" bash -c "conan --version"
 
 reportResults
