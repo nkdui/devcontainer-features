@@ -4,7 +4,6 @@ set -e
 echo "Activating feature 'conan' (1.x series only)"
 
 CONAN_VERSION="${CONANVERSION:-latest}"
-USER_HOME="${USERHOME:-/root}"
 CONAN_VENV_DIR="/opt/conan-venv"
 
 validate_version() {
@@ -118,20 +117,10 @@ install_conan() {
     echo "Successfully installed: $(conan --version 2>&1 | head -n1)"
 }
 
-setup_conan_home() {
-    if [ -d "$USER_HOME/.conan" ]; then
-        return
-    fi
-    echo "Setting up Conan home directory at $USER_HOME/.conan..."
-    mkdir -p "$USER_HOME/.conan"
-    chown -R "$_REMOTE_USER:$_REMOTE_USER" "$USER_HOME/.conan" 2>/dev/null || true
-}
-
 validate_version
 check_existing_conan
-echo "Installing Conan ${CONAN_VERSION} (user home: $USER_HOME)"
+echo "Installing Conan ${CONAN_VERSION}"
 install_python
 install_conan
-setup_conan_home
 
 echo "Conan feature activation complete!"

@@ -9,11 +9,6 @@
             "type": "string",
             "default": "latest",
             "description": "Version of Conan 1.x to install (e.g., '1.66.0', '1.60.2', or 'latest' for newest 1.x)"
-        },
-        "userHome": {
-            "type": "string",
-            "default": "/home/$_REMOTE_USER",
-            "description": "Home directory for the user (used for Conan cache and settings)"
         }
     },
     "installsAfter": [
