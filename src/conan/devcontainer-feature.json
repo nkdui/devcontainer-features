@@ -1,7 +1,7 @@
 {
     "name": "Conan Package Manager (1.x)",
     "id": "conan",
-    "version": "1.1.0",
+    "version": "1.0.0",
     "description": "Installs Conan 1.x, the open source C/C++ package manager",
     "documentationURL": "https://docs.conan.io/en/1.x/",
     "options": {
