@@ -1,31 +1,25 @@
 {
-  "debian": {
-    "image": "debian:latest",
-    "features": {
-      "conan": {}
-    }
-  },
   "fedora": {
-    "image": "fedora:latest",
+    "image": "docker.io/library/fedora:latest",
     "features": {
       "conan": {}
     }
   },
   "archlinux": {
-    "image": "archlinux:latest",
+    "image": "docker.io/library/archlinux:latest",
     "features": {
       "conan": {}
     }
   },
   "alpine": {
-    "image": "alpine:latest",
+    "image": "docker.io/library/alpine:latest",
     "features": {
       "ghcr.io/cirolosapio/devcontainers-features/alpine-bash:0": {},
       "conan": {}
     }
   },
   "specific_version": {
-    "image": "debian:latest",
+    "image": "docker.io/library/debian:latest",
     "features": {
       "conan": {
         "conanVersion": "1.62.0"
@@ -33,7 +27,7 @@
     }
   },
   "installed": {
-    "image": "conanio/conan:1.62.0",
+    "image": "docker.io/library/conanio/conan:1.62.0",
     "features": {
       "ghcr.io/cirolosapio/devcontainers-features/alpine-bash:0": {},
       "conan": {
