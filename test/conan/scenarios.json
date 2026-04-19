@@ -27,7 +27,7 @@
     }
   },
   "installed": {
-    "image": "docker.io/library/conanio/conan:1.62.0",
+    "image": "docker.io/conanio/conan:1.62.0",
     "features": {
       "ghcr.io/cirolosapio/devcontainers-features/alpine-bash:0": {},
       "conan": {
