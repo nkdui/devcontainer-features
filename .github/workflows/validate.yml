@@ -1,6 +1,6 @@
-name: "Validate devcontainer-feature.json files"
+name: "Devcontainer validate"
 on:
-  workflow_dispatch:
+  push:
   pull_request:
 
 jobs:

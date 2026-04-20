@@ -1,10 +1,32 @@
-name: "Release dev container features & Generate Documentation"
+name: "Devcontainer publish"
 on:
+  workflow_run:
+    workflows: ["Devcontainer test"]
+    types: [completed]
+    branches: ["main"]
   workflow_dispatch:
 
 jobs:
+  check-test:
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'workflow_run' || github.event_name == 'workflow_dispatch' }}
+    outputs:
+      should_run: ${{ steps.check.outputs.should_run }}
+    steps:
+      - id: check
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "should_run=true" >> $GITHUB_OUTPUT
+          elif [ "${{ github.event.workflow_run.conclusion }}" = "success" ]; then
+            echo "should_run=true" >> $GITHUB_OUTPUT
+          else
+            echo "Test workflow did not succeed. Skipping release."
+            echo "should_run=false" >> $GITHUB_OUTPUT
+          fi
+
   deploy:
-    if: ${{ github.ref == 'refs/heads/main' }}
+    needs: check-test
+    if: needs.check-test.outputs.should_run == 'true' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
       contents: write
