@@ -1,3 +1,4 @@
+
 # Conan Package Manager (1.x) (conan)
 
 Installs Conan 1.x, the open source C/C++ package manager
@@ -6,9 +7,7 @@ Installs Conan 1.x, the open source C/C++ package manager
 
 ```json
 "features": {
-    "ghcr.io/devcontainers/feature-starter/conan:1": {
-        "conanVersion": "latest"
-    }
+    "ghcr.io/nkdui/devcontainer-features/conan:1": {}
 }
 ```
 
@@ -22,3 +21,4 @@ Installs Conan 1.x, the open source C/C++ package manager
 
 ---
 
+_Note: This file was auto-generated from the [devcontainer-feature.json](https://github.com/nkdui/devcontainer-features/blob/main/src/conan/devcontainer-feature.json).  Add additional notes to a `NOTES.md`._
